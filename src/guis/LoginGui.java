@@ -1,7 +1,14 @@
 package guis;
 
+import db_objs.MyJDBC;
+import db_objs.User;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class LoginGui extends BaseFrame{
     public LoginGui() {
@@ -40,12 +47,55 @@ public class LoginGui extends BaseFrame{
         JButton loginButton = new JButton("Login");
         loginButton.setBounds(20, 360, super.getWidth() -50, 40);
         loginButton.setFont(new Font("Dialog", Font.BOLD, 20));
+        loginButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                String username = usernameField.getText();
+
+                String password = String.valueOf(passwordField.getPassword());
+
+                User user = MyJDBC.validateLogin(username, password);
+
+                if (user != null) {
+
+                    LoginGui.this.dispose();
+
+                    BankingAppGui bankingAppGui = new BankingAppGui(user);
+                    bankingAppGui.setVisible(true);
+
+                    JOptionPane.showMessageDialog(bankingAppGui, "Login Successfully!");
+                }else{
+
+                    JOptionPane.showMessageDialog(LoginGui.this, "Login Failed!");
+
+                }
+            }
+
+        });
         add(loginButton);
 
         JLabel registerLabel = new JLabel("<html><a href=\"#\">Don't have an account? Register here!</a></html>");
         registerLabel.setBounds(0, 410, super.getWidth() -10, 30);
         registerLabel.setFont(new Font("Dialog", Font.PLAIN, 15));
         registerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+
+        registerLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                LoginGui.this.dispose();
+
+                new RegisterGui().setVisible(true);
+
+
+
+            }
+
+
+        });
+
         add(registerLabel);
     }
 }
